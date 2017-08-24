@@ -154,19 +154,12 @@ class LazyImage extends HTMLElement {
     }
 
     get height() {
-        if(!this.imageElement) {
-            return null;
-        }
-
-        return this.imageElement.getAttribute("height");
+        return parseInt(this.getAttribute("height"));
     }
 
     set height(newValue) {
-        if(!this.imageElement) {
-            return;
-        }
-
-        this.imageElement.setAttribute("height", newValue);
+        this.setAttribute("height", newValue);
+        this.syncAttribute("height", newValue);
     }
 
     get visible() {
