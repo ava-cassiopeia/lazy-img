@@ -114,9 +114,17 @@ class LazyImage extends HTMLElement {
         this.loaded = true;
     }
 
-    syncAttribute(name, value) {
+    syncAttribute(name, value, doParent = true) {
         if(this.imageElement) {
-            this.imageElement.setAttribute(name, value);
+            if(value || value === 0) {
+                this.imageElement.setAttribute(name, value);
+            } else {
+                this.imageElement.removeAttribute(name);
+            }
+        }
+
+        if(doParent) {
+            this.setAttribute(name, value);
         }
     }
 
@@ -135,7 +143,6 @@ class LazyImage extends HTMLElement {
     }
 
     set alt(newValue) {
-        this.setAttribute("alt", newValue);
         this.syncAttribute("alt", newValue);
     }
 
@@ -149,7 +156,6 @@ class LazyImage extends HTMLElement {
             return;
         }
 
-        this.setAttribute("crossorigin", newValue);
         this.syncAttribute("crossorigin", newValue);
     }
 
@@ -158,7 +164,6 @@ class LazyImage extends HTMLElement {
     }
 
     set height(newValue) {
-        this.setAttribute("height", newValue);
         this.syncAttribute("height", newValue);
     }
 
