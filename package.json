@@ -1,0 +1,36 @@
+{
+  "name": "lazy-img",
+  "version": "0.1.0",
+  "description": "Custom, production-ready HTML element (`<lazy-img>`) that lazily loads images as they come on to the screen.",
+  "main": "medusa-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aeolingamenfel/lazy-img.git"
+  },
+  "keywords": [
+    "lazy",
+    "image",
+    "img",
+    "custom",
+    "element"
+  ],
+  "author": "Ivan Mattie",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aeolingamenfel/lazy-img/issues"
+  },
+  "homepage": "https://github.com/aeolingamenfel/lazy-img#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify-es": "^0.1.3",
+    "gulp-zip": "^4.0.0",
+    "webpack-stream": "^4.0.0"
+  }
+}
