@@ -1,5 +1,5 @@
 {
-  "name": "lazy-img",
+  "name": "@imatte/lazy-img",
   "version": "0.1.0",
   "description": "Custom, production-ready HTML element (`<lazy-img>`) that lazily loads images as they come on to the screen.",
   "main": "medusa-config.js",
