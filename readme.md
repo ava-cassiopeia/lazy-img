@@ -1,5 +1,7 @@
 # Lazy Image Custom Element
 
+[![npm version](https://badge.fury.io/js/lazy-img-element.svg)](https://badge.fury.io/js/lazy-img-element)
+
 Custom, production-ready HTML element (`<lazy-img>`) that lazily loads images
 as they come on to the screen.
 
