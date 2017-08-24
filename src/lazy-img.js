@@ -21,8 +21,6 @@ const io = new IntersectionObserver(function(events) {
 
         if(event.isIntersecting) {
             event.target.setAttribute("visible", "");
-        } else {
-            event.target.removeAttribute("visible");
         }
     }
 });
@@ -39,7 +37,7 @@ class LazyImage extends HTMLElement {
      *  attribute.
      */
     static get observedAttributes() {
-        return ["src", "visible", "alt"];
+        return ["src", "visible", "alt", "crossorigin"];
     };
 
     constructor() {
@@ -81,7 +79,9 @@ class LazyImage extends HTMLElement {
      * @param {Mixed} newValue the new value of the attribute
      */
     attributeChangedCallback(name, oldValue, newValue) {
-        console.log(`${name}: ${newValue}`);
+        if(oldValue === newValue) {
+            return;
+        }
 
         switch(name) {
             case "visible":
@@ -89,8 +89,8 @@ class LazyImage extends HTMLElement {
                     this.loadImage();
                 }
                 break;
-            case "src":
-                this.src = newValue;
+            default:
+                this[name] = newValue;
                 break;
         }
     }
@@ -136,8 +136,21 @@ class LazyImage extends HTMLElement {
 
     set alt(newValue) {
         this.setAttribute("alt", newValue);
-
         this.syncAttribute("alt", newValue);
+    }
+
+    get crossorigin() {
+        return this.getAttribute("crossorigin");
+    }
+
+    set crossorigin(newValue) {
+        if(newValue !== 'anonymous' && newValue !== 'use-credentials') {
+            console.warn("Invalid crossorigin value set.");
+            return;
+        }
+
+        this.setAttribute("crossorigin", newValue);
+        this.syncAttribute("crossorigin", newValue);
     }
 
     get visible() {
