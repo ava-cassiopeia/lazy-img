@@ -38,7 +38,7 @@ class LazyImage extends HTMLElement {
      */
     static get observedAttributes() {
         return ["src", "visible", "alt", "crossorigin", "height", "ismap",
-            "longdesc", "sizes", "srcset"];
+            "longdesc", "sizes", "srcset", "usemap"];
     };
 
     constructor() {
@@ -202,6 +202,14 @@ class LazyImage extends HTMLElement {
 
     set srcset(newValue) {
         this.syncAttribute("srcset", newValue);
+    }
+
+    get usemap() {
+        return this.getAttribute("usemap");
+    }
+
+    set usemap(newValue) {
+        this.syncAttribute("usemap", newValue);
     }
 
     set visible(newValue) {
