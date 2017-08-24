@@ -37,7 +37,8 @@ class LazyImage extends HTMLElement {
      *  attribute.
      */
     static get observedAttributes() {
-        return ["src", "visible", "alt", "crossorigin", "height", "ismap"];
+        return ["src", "visible", "alt", "crossorigin", "height", "ismap",
+            "longdesc", "sizes", "srcset"];
     };
 
     constructor() {
@@ -177,6 +178,30 @@ class LazyImage extends HTMLElement {
 
     get visible() {
         return this.hasAttribute("visible");
+    }
+
+    get longdesc() {
+        return this.getAttribute("longdesc");
+    }
+
+    set longdesc(newValue) {
+        this.syncAttribute("longdesc", newValue);
+    }
+
+    get sizes() {
+        return this.getAttribute("sizes").split(",");
+    }
+
+    set sizes(newValue) {
+        this.syncAttribute("sizes", newValue);
+    }
+
+    get srcset() {
+        return this.getAttribute("srcset").split(",");
+    }
+
+    set srcset(newValue) {
+        this.syncAttribute("srcset", newValue);
     }
 
     set visible(newValue) {
