@@ -10,20 +10,24 @@ template.innerHTML = `
         }
 
         img {
-            width: 100%;
+            max-width: 100%;
         }
     </style>
 `;
 
-const io = new IntersectionObserver(function(events) {
-    for(let x = 0; x < events.length; x++) {
-        const event = events[x];
+let io = null;
 
-        if(event.isIntersecting) {
-            event.target.setAttribute("visible", "");
+if(window.IntersectionObserver) {
+    io = new IntersectionObserver(function(events) {
+        for(let x = 0; x < events.length; x++) {
+            const event = events[x];
+    
+            if(event.isIntersecting) {
+                event.target.setAttribute("visible", "");
+            }
         }
-    }
-});
+    });
+}
 
 /**
  * This is the class that controls each instance of your custom element.
@@ -59,7 +63,11 @@ class LazyImage extends HTMLElement {
      * cases.
      */
     connectedCallback() {
-        io.observe(this);
+        if(io) {
+            io.observe(this);
+        } else {
+            this.loadImage();
+        }
     }
 
     /**
@@ -67,7 +75,9 @@ class LazyImage extends HTMLElement {
      * the DOM. Disconnect any listeners or anything else here.
      */
     disconnectedCallback() {
-        io.unobserve(this);
+        if(io) {
+            io.unobserve(this);
+        }
     }
 
     /**
@@ -104,9 +114,16 @@ class LazyImage extends HTMLElement {
         // create the image tag
         this.imageElement = document.createElement("img");
 
-        // add all relevant values
-        this.imageElement.src = this.src;
-        this.imageElement.alt = this.alt || "";
+        // add all relevant attributes
+        for(let x = 0; x < LazyImage.observedAttributes.length; x++) {
+            const observedAttribute = LazyImage.observedAttributes[x];
+
+            if(this.hasAttribute(observedAttribute)) {
+                this.imageElement.setAttribute(observedAttribute,
+                    this[observedAttribute]);
+            }
+        }
+
 
         // add it to the shadow root so it is in the DOM tree
         this.shadowRoot.appendChild(this.imageElement);
@@ -189,7 +206,11 @@ class LazyImage extends HTMLElement {
     }
 
     get sizes() {
-        return this.getAttribute("sizes").split(",");
+        if(this.hasAttribute("sizes")) {
+            return this.getAttribute("sizes").split(",");
+        } else {
+            return [];
+        }
     }
 
     set sizes(newValue) {
@@ -197,7 +218,11 @@ class LazyImage extends HTMLElement {
     }
 
     get srcset() {
-        return this.getAttribute("srcset").split(",");
+        if(this.hasAttribute("srcset")) {
+            return this.getAttribute("srcset").split(",");
+        } else {
+            return [];
+        }
     }
 
     set srcset(newValue) {
