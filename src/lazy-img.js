@@ -7,10 +7,15 @@ template.innerHTML = `
     <style>
         :host {
             display: inline-block;
+            width: 100%;
+        }
+
+        :host(:not([loaded])) {
+            background: var(--lazy-img-placeholder-color, #ddd);
         }
 
         img {
-            max-width: 100%;
+            width: 100%;
         }
     </style>
 `;
@@ -42,8 +47,13 @@ class LazyImage extends HTMLElement {
      */
     static get observedAttributes() {
         return ["src", "visible", "alt", "crossorigin", "height", "ismap",
-            "longdesc", "sizes", "srcset", "usemap"];
+            "longdesc", "sizes", "srcset", "usemap", "ratio"];
     };
+
+    static get syncedAttributes() {
+        return ["src", "visible", "alt", "crossorigin", "height", "ismap",
+            "longdesc", "sizes", "srcset", "usemap"];
+    }
 
     constructor() {
         super();
@@ -55,6 +65,7 @@ class LazyImage extends HTMLElement {
         // add any initial variables here
         this.imageElement = null;
         this.loaded = false;
+        this.loading = false;
     }
 
     /**
@@ -107,7 +118,7 @@ class LazyImage extends HTMLElement {
     }
 
     loadImage() {
-        if(this.loaded) {
+        if(this.loaded || this.loading) {
             return;
         }
 
@@ -115,8 +126,8 @@ class LazyImage extends HTMLElement {
         this.imageElement = document.createElement("img");
 
         // add all relevant attributes
-        for(let x = 0; x < LazyImage.observedAttributes.length; x++) {
-            const observedAttribute = LazyImage.observedAttributes[x];
+        for(let x = 0; x < LazyImage.syncedAttributes.length; x++) {
+            const observedAttribute = LazyImage.syncedAttributes[x];
 
             if(this.hasAttribute(observedAttribute)) {
                 this.imageElement.setAttribute(observedAttribute,
@@ -124,12 +135,46 @@ class LazyImage extends HTMLElement {
             }
         }
 
-
-        // add it to the shadow root so it is in the DOM tree
-        this.shadowRoot.appendChild(this.imageElement);
+        // apply listener to element
+        this.imageElement.addEventListener("load", () => {
+            this._imageFinishedLoading();
+        });
 
         // make sure we can't double-load the image
-        this.loaded = true;
+        this.loading = true;
+    }
+
+    /**
+     * Called automatically when the image finishes loading.
+     */
+    _imageFinishedLoading() {
+        requestAnimationFrame(() => {
+            this._unsetAspectRatio();
+            this.shadowRoot.appendChild(this.imageElement);
+            this.setAttribute("loaded", "");
+        });
+    }
+
+    /**
+     * Sets the aspect ratio of the image, so that it takes up the right space
+     * inside of the parent container before the image shows up. The image will
+     * also be forced to the appropriate aspect ratio. Should not be called from
+     * outside of the class.
+     * 
+     * @param {Number} width 
+     * @param {Number} height 
+     */
+    _setAspectRatio(width, height) {
+        this.setAttribute("style", 
+            `padding-top: calc(1 / (${width} / ${height}) * 100%);`);
+    }
+
+    /**
+     * Unsets the aspect ratio that was applied. Should not be called from
+     * outside the class.
+     */
+    _unsetAspectRatio() {
+        this.removeAttribute("style");
     }
 
     syncAttribute(name, value, doParent = true) {
@@ -147,6 +192,20 @@ class LazyImage extends HTMLElement {
     }
 
     /* --- Getters and Setters --- */
+
+    get ratio() {
+        return this.getAttribute("ratio");
+    }
+
+    set ratio(value) {
+        this.setAttribute("ratio", value);
+
+        const splitValue = value.split(":");
+        const width = splitValue[0];
+        const height = splitValue[1];
+
+        this._setAspectRatio(width, height);
+    }
 
     get src() {
         return this._src;

@@ -34,5 +34,18 @@ elements as well.
 *Example:*
 
 ```HTML
-<lazy-img src="..." />
+<lazy-img src="..."></lazy-img>
+```
+
+## Aspect Ratio Space
+
+In addition to all normal features of the `<img />` tag, you can specify a 
+`ratio` attribute so that the `<lazy-img>` will occupy the proper space on the 
+page while the image is loading. To do so, specify an aspect ratio like:
+`[width]:[height]`.
+
+*Example:*
+
+```HTML
+<lazy-img src="..." ratio="16:9"></lazy-img>
 ```
